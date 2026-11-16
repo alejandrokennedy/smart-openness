@@ -119,6 +119,7 @@
 			<Plot
 				width={chartW}
 				height={chartH}
+				marginTop={14}
 				marginLeft={isMobile ? 34 : 44}
 				marginRight={isMobile ? 44 : 180}
 				x={{ domain: [2018, 2025], ticks: YEARS, label: "", tickFormat: (d: number) => (isMobile ? `'${String(d).slice(2)}` : String(d)) }}
