@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Smoke test for the shared story pieces: PlotStory, StoryActions, and
+	 * Smoke test for the shared story pieces: PlotStoryDemo, StoryActions, and
 	 * ChartFooter (note + per-item sources + linked credit). /demo/plot-story
 	 */
-	import PlotStory from "$components/story/PlotStory.svelte";
+	import PlotStoryDemo from "$components/story/PlotStoryDemo.svelte";
 	import StoryActions from "$components/story/StoryActions.svelte";
 	import ChartFooter from "$components/helpers/cen-chart-header-footer/ChartFooter.svelte";
 </script>
@@ -13,7 +13,7 @@
 	<StoryActions />
 </section>
 
-<PlotStory />
+<PlotStoryDemo />
 
 <section class="outro">
 	<ChartFooter

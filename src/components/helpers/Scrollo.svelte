@@ -157,10 +157,10 @@
 
 		// Progress: 0 when trigger hits top, 1 when trigger hits bottom.
 		//
-		// NB: this formula has an offsite consumer. PlotStory.svelte INVERTS it —
+		// NB: this formula has an offsite consumer. PlotStoryDemo.svelte INVERTS it —
 		// solving for the scrollY at a given progress — to anchor overlay notes
 		// that must move 1:1 with the scroll. If you change what `rect.height` or
-		// the trigger line means here, update PlotStory's inverse too; the
+		// the trigger line means here, update that inverse too; the
 		// failure is notes scrolling at slightly the wrong rate, not an error.
 		const progress = (triggerLine - elementTop) / rect.height;
 
