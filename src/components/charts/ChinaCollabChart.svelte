@@ -21,7 +21,6 @@
 		cn_total: +d.cn_total
 	}));
 	const PROVISIONAL_YEAR = 2025;
-	const solid = data.filter((d) => d.year < PROVISIONAL_YEAR);
 	const YEARS = [...new Set(data.map((d) => d.year))];
 	const ends = data.filter((d) => d.year === PROVISIONAL_YEAR);
 
@@ -126,7 +125,7 @@
 				y={{ domain: [0, 35], grid: true, ticks: [0, 5, 10, 15, 20, 25, 30, 35], label: "", tickFormat: (d: number) => `${d}%` }}
 				color={{ domain: FIELDS, scheme: COLORS }}
 			>
-				<Line data={solid} x="year" y="share" stroke="field" strokeWidth={STROKE_W} />
+				<Line {data} x="year" y="share" stroke="field" strokeWidth={STROKE_W} />
 				<Dot {data} x="year" y="share" fill="field" stroke="white" r={DOT_R} />
 				<Text
 					data={ends}
