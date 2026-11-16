@@ -1,0 +1,72 @@
+/* The page's Save button, once static/aem/story-save.js has moved it into the
+   story's title page: styled to match the story's own Share button. From
+   Cancer Alley; recoloured for a white page in nobel-noms. */
+
+body.cen-save-transferred .article-header-sticky {
+	display: none !important;
+}
+
+[data-cen-save-actions] .cen-save-slot {
+	display: flex;
+}
+
+[data-cen-save-actions] .cen-save-slot:empty {
+	display: none;
+}
+
+[data-cen-save-actions] .cen-save-button {
+	align-items: center;
+	background: transparent !important;
+	border: 1px solid transparent !important;
+	border-radius: 2px;
+	color: #12263a !important;
+	cursor: pointer;
+	display: inline-flex;
+	font-family: "Roboto Mono", monospace;
+	font-size: 0.7rem;
+	gap: 0.4rem;
+	letter-spacing: 0.05em;
+	padding: 0.25rem 0.6rem !important;
+	text-decoration: none !important;
+	text-transform: uppercase;
+	transition: border-color 0.15s;
+}
+
+[data-cen-save-actions] .cen-save-button:hover,
+[data-cen-save-actions] .cen-save-button:focus-visible {
+	background: transparent !important;
+	border-color: #12263a !important;
+	color: #12263a !important;
+	outline: none;
+	text-decoration: none !important;
+}
+
+[data-cen-save-actions] .cen-save-button span,
+[data-cen-save-actions] .cen-save-button .utility-btn-label {
+	color: #12263a !important;
+	-webkit-text-fill-color: #12263a !important;
+}
+
+[data-cen-save-actions] .cen-save-button svg,
+[data-cen-save-actions] .cen-save-button i {
+	color: var(--color-red, #ff533d) !important;
+	fill: currentColor !important;
+	flex-shrink: 0;
+	height: 16px !important;
+	width: 16px !important;
+}
+
+[data-cen-save-actions] .cen-save-button svg path {
+	fill: currentColor !important;
+}
+
+/* Underlined on hover, as the Share button beside it is on the C&EN page.
+   The button itself keeps text-decoration: none above, which is
+   what blocked the page's own hover underline; this puts it on the label. */
+[data-cen-save-actions] .cen-save-button:hover span,
+[data-cen-save-actions] .cen-save-button:hover .utility-btn-label,
+[data-cen-save-actions] .cen-save-button:focus-visible span,
+[data-cen-save-actions] .cen-save-button:focus-visible .utility-btn-label {
+	text-decoration: underline !important;
+	text-underline-offset: 2px;
+}
