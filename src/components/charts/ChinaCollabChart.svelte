@@ -24,13 +24,35 @@
 	const YEARS = [...new Set(data.map((d) => d.year))];
 	const ends = data.filter((d) => d.year === PROVISIONAL_YEAR);
 
-	const FIELDS = ["Chemistry", "Chemical engineering", "Biochemistry, genetics & molecular biology"];
-	const COLORS = ["#2a78d6", "#eb6834", "#1baf7a"];
+	const FIELDS = [
+		"Chemistry",
+		"Chemical engineering",
+		"Biochemistry, genetics & molecular biology"
+	];
+	// Green darkened from #1baf7a (2.8:1) to clear WCAG 3:1 against white while
+	// staying CVD-distinct from the orange (validated with the dataviz palette script).
+	const COLORS = ["#2a78d6", "#eb6834", "#17a576"];
 	const colorOf = (field: string) => COLORS[FIELDS.indexOf(field)];
-	const SHORT: Record<string, string> = { "Biochemistry, genetics & molecular biology": "Biochemistry" };
+	const SHORT: Record<string, string> = {
+		"Biochemistry, genetics & molecular biology": "Biochemistry"
+	};
 	const short = (field: string) => SHORT[field] ?? field;
 	// Chemistry and Biochemistry end 0.7 pp apart in 2025 — nudge labels apart.
-	const LABEL_DY: Record<string, number> = { Chemistry: 7, "Biochemistry, genetics & molecular biology": -7 };
+	const LABEL_DY: Record<string, number> = {
+		Chemistry: 7,
+		"Biochemistry, genetics & molecular biology": -7
+	};
+
+	// Screen-reader summary: the takeaway in one sentence, built from the data.
+	const shareAt = (field: string, year: number) =>
+		data.find((d) => d.field === field && d.year === year)!.share.toFixed(1);
+	const SUMMARY =
+		"Line chart. The share of China-affiliated papers co-authored internationally fell in all three fields between 2018 and 2025: " +
+		FIELDS.map(
+			(f) =>
+				`${short(f).toLowerCase()} from ${shareAt(f, 2018)}% to ${shareAt(f, 2025)}%`
+		).join("; ") +
+		". The data table below has every year.";
 
 	// Axis styling, matching clinical-trials: muted #4b4b4b ticks/labels, faint grid.
 	const AXIS_MUTED = "#4b4b4b";
@@ -80,8 +102,13 @@
 	<div class="ct-tip">
 		<div class="ct-tip-head">
 			<span class="ct-tip-year">{d.year}</span>
-			<span class="ct-tip-field" style:color={colorOf(d.field)}>{short(d.field)}</span>
-			{#if d.year === PROVISIONAL_YEAR}<span class="ct-tip-col">provisional</span>{/if}
+			<span class="ct-tip-field"
+				><i class="ct-tip-swatch" style:background={colorOf(d.field)}
+				></i>{short(d.field)}</span
+			>
+			{#if d.year === PROVISIONAL_YEAR}<span class="ct-tip-col"
+					>provisional</span
+				>{/if}
 		</div>
 		<div class="ct-tip-grid">
 			<span class="ct-tip-label">international share</span>
@@ -103,14 +130,16 @@
 
 	<div class="legend">
 		{#each FIELDS as f, i (f)}
-			<span class="key"><span class="swatch" style:background={COLORS[i]}></span>{f}</span>
+			<span class="key"
+				><span class="swatch" style:background={COLORS[i]}></span>{f}</span
+			>
 		{/each}
 	</div>
 
 	<div
 		class="plot-container"
 		role="img"
-		aria-label="Line chart: share of China-affiliated papers co-authored internationally, 2018–2025, for chemistry, chemical engineering and biochemistry"
+		aria-label={SUMMARY}
 		bind:clientWidth={measuredW}
 		style:--fig-w={`${chartW}px`}
 		style:--axis-muted={AXIS_MUTED}
@@ -122,8 +151,20 @@
 				marginTop={14}
 				marginLeft={isMobile ? 34 : 44}
 				marginRight={isMobile ? 44 : 180}
-				x={{ domain: [2018, 2025], ticks: YEARS, label: "", tickFormat: (d: number) => (isMobile ? `'${String(d).slice(2)}` : String(d)) }}
-				y={{ domain: [0, 35], grid: true, ticks: [0, 5, 10, 15, 20, 25, 30, 35], label: "", tickFormat: (d: number) => `${d}%` }}
+				x={{
+					domain: [2018, 2025],
+					ticks: YEARS,
+					label: "",
+					tickFormat: (d: number) =>
+						isMobile ? `'${String(d).slice(2)}` : String(d)
+				}}
+				y={{
+					domain: [0, 35],
+					grid: true,
+					ticks: [0, 5, 10, 15, 20, 25, 30, 35],
+					label: "",
+					tickFormat: (d: number) => `${d}%`
+				}}
 				color={{ domain: FIELDS, scheme: COLORS }}
 			>
 				<Line {data} x="year" y="share" stroke="field" strokeWidth={STROKE_W} />
@@ -132,7 +173,8 @@
 					data={ends}
 					x="year"
 					y="share"
-					text={(d) => `${d.share.toFixed(1)}%${isMobile ? "" : ` ${short(d.field)}`}`}
+					text={(d) =>
+						`${d.share.toFixed(1)}%${isMobile ? "" : ` ${short(d.field)}`}`}
 					dx={10}
 					dy={(d) => LABEL_DY[d.field] ?? 0}
 					textAnchor="start"
@@ -147,7 +189,12 @@
 						{#snippet children({ datum })}
 							{#if datum}
 								<i class="dot-grown" style:--dot={colorOf(datum.field)}></i>
-								<AnchoredTooltip key={datum} offset={14} align="center" target=".china-collab">
+								<AnchoredTooltip
+									key={datum}
+									offset={14}
+									align="center"
+									target=".china-collab"
+								>
 									{@render tipBody(datum)}
 								</AnchoredTooltip>
 							{/if}
@@ -158,10 +205,43 @@
 		{/if}
 	</div>
 
+	<!-- Same data as the chart, for screen readers and keyboard users (the hover
+	     tooltip is mouse-only). Visually hidden. -->
+	<div class="sr-only">
+		<table>
+			<caption
+				>Share of China-affiliated papers co-authored internationally, by field
+				and year (2025 provisional)</caption
+			>
+			<thead>
+				<tr>
+					<th scope="col">Year</th>
+					{#each FIELDS as f (f)}<th scope="col">{f}</th>{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each YEARS as y (y)}
+					<tr>
+						<th scope="row">{y}</th>
+						{#each FIELDS as f (f)}<td>{shareAt(f, y)}%</td>{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
 	<ChartFooter
 		note="International means affiliation in at least one country besides mainland China (Hong Kong counts as international). 2025 data are still being indexed by OpenAlex."
-		source={{ items: [{ name: "OpenAlex", url: "https://openalex.org/" }, { name: "C&EN analysis" }] }}
-		credit={{ text: "Alexander Kennedy", href: "https://cen.acs.org/staffDirectory/Alexander-Kennedy.html" }}
+		source={{
+			items: [
+				{ name: "OpenAlex", url: "https://openalex.org/" },
+				{ name: "C&EN analysis" }
+			]
+		}}
+		credit={{
+			text: "Alexander Kennedy",
+			href: "https://cen.acs.org/staffDirectory/Alexander-Kennedy.html"
+		}}
 		marginTop="1rem"
 	/>
 </div>
@@ -271,6 +351,28 @@
 	.ct-tip-year {
 		font-variant-numeric: tabular-nums;
 		font-weight: 600;
+	}
+
+	/* Field name stays in ink (series colours fail 4.5:1 as small text); the
+	   swatch carries the colour, as in the legend. */
+	.ct-tip-swatch {
+		display: inline-block;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		margin-right: 5px;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.ct-tip-field {
